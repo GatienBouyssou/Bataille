@@ -1,5 +1,5 @@
 package metier;
-//oueyy ca fon
+
 public class Bateau {
 	
 	private final String nom;
@@ -7,7 +7,7 @@ public class Bateau {
 	private int ptDeVie;
 	private boolean estCoulé;
 	private boolean estVertical;
-	private boolean estVecccrtical;
+
 	
 	public Bateau(String nom, int taille, boolean estVertical) {
 		this.taille = taille;
