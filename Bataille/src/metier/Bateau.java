@@ -1,7 +1,7 @@
 package metier;
 
 public class Bateau {
-	
+	//oueyy ca fon
 	private final String nom;
 	private final int taille;
 	private int ptDeVie;
