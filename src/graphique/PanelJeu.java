@@ -25,6 +25,7 @@ public class PanelJeu extends JPanel {
 	// private JLabel jl_Case= new JLabel("Case Selectionné :");
 	// private JButton jb_Tirer= new JButton("Tirer!");
 	// private JLabel jl_etat= new JLabel("");
+	///defrrfrf
 
 	private JLabel jl_titre = new JLabel("Paramètre de Jeu");
 	private JPanel jp_param = new JPanel();

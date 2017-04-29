@@ -7,7 +7,7 @@ public class ArtificialIntel {
 	Case cible;
 	
 	public ArtificialIntel(){
-		
+		rmd=12;
 	}
 	
 	public Case tirer(){
