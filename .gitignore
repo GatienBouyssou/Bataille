@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Eclipse
 .settings/
 .project
@@ -6,3 +7,12 @@
 # Maven
 /target/
 /bin/
+=======
+# Eclipse    
+.classpath    
+.project    
+.settings/
+# Maven
+target/
+   
+>>>>>>> branch 'master' of https://github.com/Thejokedeamon/Bataille
