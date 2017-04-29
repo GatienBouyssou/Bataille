@@ -7,6 +7,7 @@ public class Bateau {
 	private int ptDeVie;
 	private boolean estCoulé;
 	private boolean estVertical;
+	private final int thooomas;
 
 	
 	public Bateau(String nom, int taille, boolean estVertical) {
