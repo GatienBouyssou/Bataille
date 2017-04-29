@@ -3,19 +3,31 @@ package metier;
 public class Plateau {
 	
 	private Case[][] plat;
-	private final int taillePlat;
+	private final int longueur;
+	private final int largeur;
 	
-	public Plateau(int taillePlat) {
-		this.plat = new Case[taillePlat][taillePlat]; 
+	public Plateau(int longueur, int largeur) {
+		this.plat = new Case[longueur][largeur]; 
 		for (int i = 0; i < plat.length; i++) {
 			for (int j = 0; j < plat.length; j++) {
 				this.plat[i][j] = new Case();
 			}
 		}
-		this.taillePlat = taillePlat;
+		this.longueur = longueur;
+		this.largeur = largeur;
 	}
 	
 	
+	public int getlongueur() {
+		return longueur;
+	}
+
+	
+	public int getLargeur() {
+		return largeur;
+	}
+
+
 	public boolean emplcmtDisp(int x, int y){
 		if(plat[x][y].getEstoccupé()){
 			return false;
@@ -39,7 +51,7 @@ public class Plateau {
 				peutPosit = true;
 				System.out.println(peutPosit);
 				System.out.println(y + bat.getTaille());
-				System.out.println(this.taillePlat);
+				System.out.println(this.longueur);
 				//vérifie que le bateau loge bien dans la grille					
 					// vérifie qu'il n'y a pas de bateau à l'endroit ou l'on veut le poser 
 					for (int i = 0; i < bat.getTaille(); i++) {
@@ -69,7 +81,7 @@ public class Plateau {
 				// faire un scanner pour ressaisir les valeurs 
 				
 				peutPosit = true;
-				System.out.println(this.taillePlat);
+				System.out.println(this.longueur);
 			
 					// vérifie qu'il n'y a pas de bateau à l'endroit ou l'on veut le poser 
 					for (int i = 0; i < bat.getTaille(); i++) {
