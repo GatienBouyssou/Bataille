@@ -7,7 +7,6 @@ public class Bateau {
 	private int ptDeVie;
 	private boolean estCoulé;
 	private boolean estVertical;
-	private final int thooomasnfjfnbvjfjbvnjbvnfjvbnfjnvkfnvjnjfn;
 
 	
 	public Bateau(String nom, int taille, boolean estVertical) {
@@ -15,7 +14,7 @@ public class Bateau {
 		this.ptDeVie = taille;
 		this.estCoulé = false;
 		this.estVertical = estVertical;
-		this.nom = nom;
+		this.nom = nom;//fdefrgrgr
 	}
 
 	public String getNom() {

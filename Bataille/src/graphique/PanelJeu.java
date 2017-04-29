@@ -28,7 +28,6 @@ public class PanelJeu extends JPanel {
 
 	private JLabel jl_titre = new JLabel("Paramètre de Jeu");
 	private JPanel jp_param = new JPanel();
-	private JLabel jl_joueur = new JLabel("Voulez vous jouer à ");
 	private JPanel jp_nbrJoueur = new JPanel();
 	private JLabel jl_taillePlateau = new JLabel("Quelle dimension de plateau ");
 	private JPanel jp_taillePlateau = new JPanel();
