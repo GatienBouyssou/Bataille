@@ -7,6 +7,10 @@ public class Bateau {
 	private int ptDeVie;
 	private boolean estCoulé;
 	private boolean estVertical;
+<<<<<<< HEAD
+=======
+
+>>>>>>> branch 'master' of https://github.com/Thejokedeamon/Bataille
 
 	
 	public Bateau(String nom, int taille, boolean estVertical) {

@@ -10,6 +10,7 @@ public class Fenetre extends JFrame{
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.getContentPane().add(pan);
 		this.setVisible(true);
+		//oui
 	}
 
 }
