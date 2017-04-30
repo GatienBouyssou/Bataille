@@ -1,5 +1,6 @@
 package metier;
 
+
 public class Jeu {
 	 
 	
@@ -10,11 +11,11 @@ public class Jeu {
 
 		// variables qui peuvent être aussi choisies par l'utilisateur  
 		final  int nbrDeBatParJoueur = 5;
-		final int largeurDuPlateau = 10;
+
 		 
 		
-		Plateau platJoueur1  = new Plateau(largeurDuPlateau);
-		Plateau platJoueur2 = new Plateau(largeurDuPlateau);
+		Plateau platJoueur1  = new Plateau(getJtf_Platx, getJtf_Platy);
+		Plateau platJoueur2 = new Plateau(getJtf_Platx, getJtf_Platy);
 		
 		// Création des bateux du joueur 1 
 		Bateau[] tabBatJ1 = new Bateau[nbrDeBatParJoueur];

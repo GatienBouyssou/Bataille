@@ -40,6 +40,16 @@ public class PanelJeu extends JPanel {
 	private JLabel jl_par = new JLabel("par");
 	private JTextField jtf_Platy = new JTextField();
 	
+	public String getJtf_Platx() {
+		return jtf_Platx.getText();
+	}
+
+
+	public String getJtf_Platy() {
+		return jtf_Platy.getText();
+	}
+
+
 	//partie du jeu
 	//partie de gauche purement informative
 	private JPanel jp_jeu = new JPanel();
@@ -209,7 +219,13 @@ public class PanelJeu extends JPanel {
 			for(int i=0; i<rows; i++){
 				for(int j=0; j<cols; j++){
 					if (e.getSource() == tableauBouton[i][j]) {
-						System.out.println(i + " oui " + j);
+						if (getTour == 1) {
+							platJoueur1.tirer(i,j);
+						}
+						else
+						{
+							platJoueur2.tirer(i,j);
+						}
 					}		
 				}
 			}
