@@ -8,10 +8,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -64,15 +67,20 @@ public class PanelJeu extends JPanel {
 
 	private int rows;
 	private int cols;
-	private int tailleBat=3;
+	private int tailleBat;
 	private boolean isVertical=true;
 	private JButton tableauBouton[][] = new JButton[50][50];
+	private JPanel jp_boutonDemarrer = new JPanel();
 	private JButton bouton = new JButton("Demarrer");
-	private Plateau plat;
-	
+	private Plateau platJoueur;
+	private Plateau platJoueur1;
+	private Plateau platJoueur2;
+	private int AQuiLeTour=1;
+	private JButton jb_validerPlateau = new JButton("Valider");
 
 	public PanelJeu(){
-			this.add(bouton);
+			this.setLayout(new BorderLayout());
+			this.add(bouton, BorderLayout.CENTER);
 			bouton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -83,14 +91,39 @@ public class PanelJeu extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					plat = new Plateau(Integer.valueOf(jtf_Platx.getText()), Integer.valueOf(jtf_Platy.getText()),Integer.valueOf(jtf_nbrBateau3.getText()), Integer.valueOf(jtf_nbrBateau4.getText()), Integer.valueOf(jtf_nbrBateau5.getText()) );
+					try{
+					platJoueur = new Plateau(Integer.valueOf(jtf_Platx.getText()), Integer.valueOf(jtf_Platy.getText()),Integer.valueOf(jtf_nbrBateau3.getText()), Integer.valueOf(jtf_nbrBateau4.getText()), Integer.valueOf(jtf_nbrBateau5.getText()) );
+					if(platJoueur.PlateauSuffisant()){
 					CreerTableau();
+					}
+					else{
+						System.out.println("Espace pas suffisant");
+					}
+					}catch( NumberFormatException nfe){
+						System.out.println("Saisir des chiffres");
+					}
+				}
+			});
+			jb_validerPlateau.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(AQuiLeTour==1){
+						platJoueur=platJoueur1;
+						platJoueur = new Plateau(Integer.valueOf(jtf_Platx.getText()), Integer.valueOf(jtf_Platy.getText()),Integer.valueOf(jtf_nbrBateau3.getText()), Integer.valueOf(jtf_nbrBateau4.getText()), Integer.valueOf(jtf_nbrBateau5.getText()) );
+						CreerTableau();
+						AQuiLeTour=2;
+					}
+					else{
+						platJoueur=platJoueur2;
+						System.out.println("Go");
+					}
 				}
 			});
 			
 	}
 	
-	class Placement implements MouseListener{
+	class Placement implements MouseListener{		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			
@@ -101,7 +134,7 @@ public class PanelJeu extends JPanel {
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
 						if(e.getSource() == tableauBouton[i][j]){
-								plat.positionner(new Bateau("Bat",tailleBat, isVertical), i, j );	
+								platJoueur.positionner(new Bateau("Bat",tailleBat, isVertical), i, j );	
 						}
 					}
 				}
@@ -125,7 +158,7 @@ public class PanelJeu extends JPanel {
 				for(int j=0; j<cols; j++){
 					if(e.getSource() == tableauBouton[i][j]){
 						for(int k=0; k<tailleBat; k++){
-							if(plat.isPlacementReussi())
+							if(platJoueur.isPlacementReussi())
 							{
 							if(isVertical){
 								tableauBouton[i+k][j].setBackground(Color.red);													
@@ -140,7 +173,7 @@ public class PanelJeu extends JPanel {
 			}
 			for(int i=0; i<rows; i++){
 				for(int j=0; j<cols; j++){
-					if(!plat.emplcmtDisp(i, j)){
+					if(!platJoueur.emplcmtDisp(i, j)){
 					tableauBouton[i][j].setBackground(Color.red);
 					}
 				}
@@ -155,12 +188,12 @@ public class PanelJeu extends JPanel {
 							for(int k=0; k<tailleBat; k++){
 								if(isVertical)
 								{
-								if(plat.emplcmtDisp(i+k,j)){
+								if(platJoueur.emplcmtDisp(i+k,j)){
 									tableauBouton[i+k][j].setBackground(Color.BLACK);
 									}
 								}
 								else{
-									if(plat.emplcmtDisp(i,j+k)){
+									if(platJoueur.emplcmtDisp(i,j+k)){
 										tableauBouton[i][j+k].setBackground(Color.BLACK);
 										}
 								}
@@ -171,7 +204,7 @@ public class PanelJeu extends JPanel {
 			}catch(ArrayIndexOutOfBoundsException aioe){
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
-						if(plat.emplcmtDisp(i, j)){
+						if(platJoueur.emplcmtDisp(i, j)){
 							tableauBouton[i][j].setBackground(Color.white);
 						}
 					}
@@ -179,7 +212,7 @@ public class PanelJeu extends JPanel {
 			}catch(NullPointerException np){
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
-						if(plat.emplcmtDisp(i, j)){
+						if(platJoueur.emplcmtDisp(i, j)){
 							tableauBouton[i][j].setBackground(Color.white);
 						}
 					}
@@ -190,7 +223,7 @@ public class PanelJeu extends JPanel {
 		public void mouseExited(MouseEvent e) {
 			for(int i=0; i<rows; i++){
 				for(int j=0; j<cols; j++){
-					if(plat.emplcmtDisp(i, j)){
+					if(platJoueur.emplcmtDisp(i, j)){
 						tableauBouton[i][j].setBackground(Color.white);
 						}
 				}
@@ -203,6 +236,8 @@ public class PanelJeu extends JPanel {
 		
 		this.revalidate();
 		this.removeAll();
+		tailleBat=3;
+		jp_tableau= new JPanel();
 		this.add(jp_tableau, BorderLayout.CENTER);
 		
 		rows = Integer.parseInt(jtf_Platx.getText());
@@ -236,6 +271,8 @@ public class PanelJeu extends JPanel {
 		this.jp_placementBateau.add(jl_sensBateau);
 		this.jp_placementBateau.add(jrb_vertical);
 		this.jp_placementBateau.add(jrb_horizontal);
+		this.jp_placementBateau.add(jb_validerPlateau);
+		
 		
 		this.jrb_3.addActionListener(new ActionListener() {
 			
@@ -289,7 +326,6 @@ public class PanelJeu extends JPanel {
 		
 		this.removeAll();
 		this.revalidate();
-		this.setLayout(new BorderLayout());
 		this.add(jl_titre, BorderLayout.NORTH);
 		jl_titre.setHorizontalAlignment(SwingConstants.CENTER);
 		jp_param.setLayout(new GridLayout(6, 2));
@@ -317,6 +353,7 @@ public class PanelJeu extends JPanel {
 	}
 		
 }
+
 
 	
 	
