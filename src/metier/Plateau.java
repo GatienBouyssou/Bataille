@@ -5,8 +5,22 @@ public class Plateau {
 	private Case[][] plat;
 	private final int longueur;
 	private final int largeur;
-	
-	public Plateau(int longueur, int largeur) {
+	private int nbrBat3;
+	private int nbrBat4;
+	private int nbrBat5;
+	private boolean PlacementReussi = false;
+		
+	public boolean isPlacementReussi() {
+		return PlacementReussi;
+	}
+
+
+	public void setPlacementReussi(boolean placementReussi) {
+		PlacementReussi = placementReussi;
+	}
+
+
+	public Plateau(int longueur, int largeur, int nb3, int nb4, int nb5) {
 		this.plat = new Case[longueur][largeur]; 
 		for (int i = 0; i < plat.length; i++) {
 			for (int j = 0; j < plat.length; j++) {
@@ -15,6 +29,38 @@ public class Plateau {
 		}
 		this.longueur = longueur;
 		this.largeur = largeur;
+		this.nbrBat3=nb3;
+		this.nbrBat4=nb4;
+		this.nbrBat5=nb5;
+	}
+	
+	public void décrementer(int tailleBat){
+		if(tailleBat==3)
+		{
+			nbrBat3--;
+		}
+		if(tailleBat==4){
+			nbrBat4--;
+			
+		}
+		if(tailleBat==5)
+		{
+			nbrBat5--;
+		}
+	}
+	public int EncoreUnBateau(int tailleBat){
+		if(tailleBat==3)
+		{
+			return nbrBat3;
+		}
+		if(tailleBat==4){
+			return nbrBat4;
+			
+		}
+		else
+		{
+			return nbrBat5;
+		}
 	}
 	
 	
@@ -30,80 +76,100 @@ public class Plateau {
 
 	public boolean emplcmtDisp(int x, int y){
 		if(plat[x][y].getEstoccupé()){
+			
 			return false;
 		} 
 		else{
 			return true;
 		}
+		
 	}
 	
 	public void positionner(Bateau bat, int x, int y){
-		
+
 		boolean peutPosit = false;
-		
-		System.out.println(bat.isEstVertical());
-		if (bat.isEstVertical()) {
-				
-			while (peutPosit == false) {
-				
-				// faire un scanner pour ressaisir les valeurs 
-				
+		System.out.println(bat.isEstVertical()+" "+ "vert");
+		//if pour le nombre de bateau
+		if(EncoreUnBateau(bat.getTaille())!=0)
+		{
+		if (bat.isEstVertical()) {				
 				peutPosit = true;
-				System.out.println(peutPosit);
-				System.out.println(y + bat.getTaille());
-				System.out.println(this.longueur);
-				//vérifie que le bateau loge bien dans la grille					
+				PlacementReussi=false;
 					// vérifie qu'il n'y a pas de bateau à l'endroit ou l'on veut le poser 
 					for (int i = 0; i < bat.getTaille(); i++) {
 						if (this.plat[x + i][y].getEstoccupé()) {
 							peutPosit = false;
 							System.out.println("La case est occupé");
 						}
-					}
-								
-				
-				
-				System.out.println(peutPosit);
-			}
-			
+					}			
+			if(peutPosit==true){	
+				PlacementReussi=true;
 			// Positionne le bateau case à case
 			for (int i = 0; i < bat.getTaille(); i++) {
 				this.plat[x+i][y].setEstoccupé();
 				this.plat[x+i][y].setOccupePar(bat);
+				System.out.println(x+" "+y);
+			}
+			décrementer(bat.getTaille());
 			}
 		
 			
-		}
-		else {
-			
-			while (peutPosit == false) {
-				
-				// faire un scanner pour ressaisir les valeurs 
-				
+		}else {				
 				peutPosit = true;
-				System.out.println(this.longueur);
-			
+				PlacementReussi=false;
 					// vérifie qu'il n'y a pas de bateau à l'endroit ou l'on veut le poser 
 					for (int i = 0; i < bat.getTaille(); i++) {
-						System.out.println("la");
 						if (this.plat[x][y + i].getEstoccupé()) {
 							peutPosit = false;
 							System.out.println("il y a déjà un bateau ");
 						}
-					}			
-				System.out.println(peutPosit);
-				
-			}
-			
+					}	
+			if(peutPosit==true){
 			//Positionne le bateau case à case
 			for (int i = 0; i < bat.getTaille(); i++) {
 				this.plat[x][y+i].setEstoccupé();		
 				this.plat[x][y+i].setOccupePar(bat);
+				System.out.println("test");
 			}
-		
-		} 
+			décrementer(bat.getTaille());
+			}
+		}
+	}
+		else{
+			System.out.println("VOus n'avez plus de Bateau de taille "+ bat.getTaille());
+		}
 	}
 	
+	public int getNbrBat3() {
+		return nbrBat3;
+	}
+
+
+	public void setNbrBat3(int nbrBat3) {
+		this.nbrBat3 = nbrBat3;
+	}
+
+
+	public int getNbrBat4() {
+		return nbrBat4;
+	}
+
+
+	public void setNbrBat4(int nbrBat4) {
+		this.nbrBat4 = nbrBat4;
+	}
+
+
+	public int getNbrBat5() {
+		return nbrBat5;
+	}
+
+
+	public void setNbrBat5(int nbrBat5) {
+		this.nbrBat5 = nbrBat5;
+	}
+
+
 	public void tirer( int x , int y){
 		
 		if(this.plat[x][y].getDejaTiré()) {

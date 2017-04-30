@@ -3,8 +3,6 @@ package graphique;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,7 +18,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import metier.Case;
+import metier.Bateau;
+import metier.Plateau;
 
 public class PanelJeu extends JPanel {
 	
@@ -28,12 +28,10 @@ public class PanelJeu extends JPanel {
 	// private JLabel jl_Case= new JLabel("Case Selectionné :");
 	// private JButton jb_Tirer= new JButton("Tirer!");
 	// private JLabel jl_etat= new JLabel("");
-	///defrrfrf
 
 	private JLabel jl_titre = new JLabel("Paramètre de Jeu");
 	private JPanel jp_param = new JPanel();
-	private JLabel jl_joueur = new JLabel("Voulez vous jouer à ");
-	private JPanel jp_nbrJoueur = new JPanel();
+	private JPanel jp_placementBateau= new JPanel();
 	private JLabel jl_taillePlateau = new JLabel("Quelle dimension de plateau ");
 	private JPanel jp_taillePlateau = new JPanel();
 	private JButton jb_validerParametre = new JButton("Valider param");
@@ -41,32 +39,9 @@ public class PanelJeu extends JPanel {
 	private JLabel jl_par = new JLabel("par");
 	private JTextField jtf_Platy = new JTextField();
 	
-	public String getJtf_Platx() {
-		return jtf_Platx.getText();
-	}
-
-
-	public String getJtf_Platy() {
-		return jtf_Platy.getText();
-	}
-
-
-	//partie du jeu
-	//partie de gauche purement informative
-	private JPanel jp_jeu = new JPanel();
-	private JLabel jl_joueur1 = new JLabel("Joueur1");
-	private JLabel jl_joueur2 = new JLabel("Joueur2");
-	private JLabel jl_score = new JLabel("score : ");
-	private JLabel jl_score1 = new JLabel("score : ");
-	private JLabel jl_scorej1 = new JLabel("0");
-	private JLabel jl_scorej2 = new JLabel("0");
-	private JLabel jl_rien = new JLabel(" ");
-	private JLabel jl_rien2 = new JLabel(" ");
-	
-	//Le plateau avec des cases
-	private JPanel jp_tabjeu = new JPanel();
-	
-	
+	private JRadioButton jrb_3 = new JRadioButton("Bateau de 3");
+	private JRadioButton jrb_4 = new JRadioButton("Bateau de 4");
+	private JRadioButton jrb_5 = new JRadioButton("Bateau de 5");
 	
 	
 	
@@ -82,8 +57,10 @@ public class PanelJeu extends JPanel {
 
 	private int rows;
 	private int cols;
+	private int tailleBat;
 	private JButton tableauBouton[][] = new JButton[50][50];
 	private JButton bouton = new JButton("Demarrer");
+	private Plateau plat;
 	
 
 	public PanelJeu(){
@@ -98,19 +75,102 @@ public class PanelJeu extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					
+					System.out.println(Integer.valueOf(jtf_Platx.getText()));
+					plat = new Plateau(Integer.valueOf(jtf_Platx.getText()), Integer.valueOf(jtf_Platy.getText()),Integer.valueOf(jtf_nbrBateau3.getText()), Integer.valueOf(jtf_nbrBateau4.getText()), Integer.valueOf(jtf_nbrBateau5.getText()) );
 					CreerTableau();
-					
-					tableauBouton[0][0].addActionListener(new ActionListener() {
-						
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							jeu();
-							
-						}
-					});
 				}
 			});
+			
+	}
+	
+	class Placement implements MouseListener{
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {
+			try{
+				for(int i=0; i<rows; i++){
+					for(int j=0; j<cols; j++){
+						if(e.getSource() == tableauBouton[i][j]){
+								plat.positionner(new Bateau("Bat",tailleBat, true), i, j );	
+						}
+					}
+				}
+				}catch(ArrayIndexOutOfBoundsException np){
+					for(int i=0; i<rows; i++){
+						for(int j=0; j<cols; j++){
+							if(tableauBouton[i][j].getText()!="Occupe")
+							{
+							tableauBouton[i][j].setBackground(Color.white);		
+							}
+						}
+					}
+					System.out.println("Le bateau ne loge pas");
+				}
+				
+
+		}
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			for(int i=0; i<rows; i++){
+				for(int j=0; j<cols; j++){
+					if(e.getSource() == tableauBouton[i][j]){
+						for(int k=0; k<tailleBat; k++){
+							if(plat.isPlacementReussi())
+							{
+							tableauBouton[i+k][j].setBackground(Color.red);													
+							tableauBouton[i+k][j].setText("Occupe");	
+							}
+						}
+					}
+				}
+			}
+			for(int i=0; i<rows; i++){
+				for(int j=0; j<cols; j++){
+					if(!plat.emplcmtDisp(i, j)){
+					tableauBouton[i][j].setBackground(Color.red);
+					}
+				}
+			}
+		}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			try{
+				for(int i=0; i<rows; i++){
+					for(int j=0; j<cols; j++){
+						if(e.getSource() == tableauBouton[i][j]){
+							for(int k=0; k<tailleBat; k++){
+								if(plat.emplcmtDisp(i+k,j))
+								{
+								tableauBouton[i+k][j].setBackground(Color.BLACK);	
+								}
+							}
+						}
+					}
+				}
+			}catch(ArrayIndexOutOfBoundsException np){
+				for(int i=0; i<rows; i++){
+					for(int j=0; j<cols; j++){
+						if(tableauBouton[i][j].getText()!="Occupe")
+						{
+						tableauBouton[i][j].setBackground(Color.white);		
+						}
+					}
+				}
+			}
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+			for(int i=0; i<rows; i++){
+				for(int j=0; j<cols; j++){
+					if(tableauBouton[i][j].getText()!="Occupe"){
+					tableauBouton[i][j].setBackground(Color.white);
+					}
+				}
+			}
+		}		
 	}
 	
 	
@@ -121,8 +181,8 @@ public class PanelJeu extends JPanel {
 		
 		this.add(jp_tableau, BorderLayout.CENTER);
 		
-		rows = 10;
-		cols = 10;
+		rows = Integer.parseInt(jtf_Platx.getText());
+		cols = Integer.parseInt(jtf_Platy.getText());
 		jp_tableau.setLayout(new GridLayout(rows, cols));
 		
 		for(int i=0; i<rows; i++){
@@ -133,52 +193,47 @@ public class PanelJeu extends JPanel {
 				jp_tableau.add(tableauBouton[i][j]);							
 			}
 		}
+		this.add(jp_placementBateau, BorderLayout.WEST);
+		jp_placementBateau.setLayout(new BoxLayout(jp_placementBateau, BoxLayout.PAGE_AXIS));
+		this.jl_titre.setText("Quelle bateau : ");
+		this.jp_placementBateau.add(jl_titre);
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(jrb_3);
+		bg.add(jrb_4);
+		bg.add(jrb_5);
+		this.jp_placementBateau.add(jrb_3);
+		this.jp_placementBateau.add(jrb_4);
+		this.jp_placementBateau.add(jrb_5);
+		
+		this.jrb_3.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				tailleBat=3;
+			}
+		});
+		this.jrb_4.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				tailleBat=4;
+			}
+		});
+		this.jrb_5.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				tailleBat=5;
+			}
+		});
+		
 	}
 	
 	
-	class Placement implements MouseListener{
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			
-		}
-		@Override
-		public void mousePressed(MouseEvent e) {
-			
-		}
-		@Override
-		public void mouseReleased(MouseEvent e) {
-		}
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			try{
-				for(int i=0; i<rows; i++){
-					for(int j=0; j<cols; j++){
-						if(e.getSource() == tableauBouton[i][j]){
-							int taille = 3;
-							for(int k=0; k<taille; k++){
-								tableauBouton[i][j+k].setBackground(Color.BLACK);													
-							}
-						}
-					}
-				}
-			}catch(NullPointerException np){
-				for(int i=0; i<rows; i++){
-					for(int j=0; j<cols; j++){
-						tableauBouton[i][j].setBackground(Color.white);		
-					}
-				}
-			}
-		}
-		@Override
-		public void mouseExited(MouseEvent e) {
-			for(int i=0; i<rows; i++){
-				for(int j=0; j<cols; j++){
-					tableauBouton[i][j].setBackground(Color.white);		
-				}
-			}
-		}		
-	}
-	
+
 	
 	
 	public void parametre(){
@@ -211,98 +266,5 @@ public class PanelJeu extends JPanel {
 		
 		
 	}
-	
-	
-	
-	class Tire implements MouseListener{
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			for(int i=0; i<rows; i++){
-				for(int j=0; j<cols; j++){
-					if (e.getSource() == tableauBouton[i][j]) {
-						if (getTour == 1) {
-							platJoueur1.tirer(i,j);
-						}
-						else
-						{
-							platJoueur2.tirer(i,j);
-						}
-					}		
-				}
-			}
-		}
-		@Override
-		public void mousePressed(MouseEvent e) {
-			
-		}
-		@Override
-		public void mouseReleased(MouseEvent e) {
-		}
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			try{
-				for(int i=0; i<rows; i++){
-					for(int j=0; j<cols; j++){
-						if(e.getSource() == tableauBouton[i][j]){
-							tableauBouton[i][j].setBackground(Color.BLACK);		
-						}
-					}
-				}
-			}catch(NullPointerException np){
-				for(int i=0; i<rows; i++){
-					for(int j=0; j<cols; j++){
-						tableauBouton[i][j].setBackground(Color.white);		
-					}
-				}
-			}
-		}
-		@Override
-		public void mouseExited(MouseEvent e) {
-			for(int i=0; i<rows; i++){
-				for(int j=0; j<cols; j++){
-					tableauBouton[i][j].setBackground(Color.white);		
-				}
-			}
-		}		
-	}
-	
-	
-	public void jeu(){
-		this.removeAll();
-		this.revalidate();
-		//déclare le layout
-		this.setLayout(new BorderLayout());
-		//Les deux panel un qui contient le plateau et l'autre les info des joueurs
-		this.add(jp_tabjeu, BorderLayout.CENTER);
-		this.add(jp_jeu, BorderLayout.WEST);
 		
-		jp_jeu.setLayout(new GridLayout(5,2));
-		//postionnement des labels
-		jp_jeu.add(jl_joueur1);
-		jp_jeu.add(jl_rien);		
-		jp_jeu.add(jl_score);		
-		jp_jeu.add(jl_scorej1);
-		jp_jeu.add(jl_joueur2);
-		jp_jeu.add(jl_rien2);	
-		jp_jeu.add(jl_score1);
-		jp_jeu.add(jl_scorej2);
-		
-		
-		rows = 10;
-		cols = 10;
-		jp_tabjeu.setLayout(new GridLayout(rows, cols));
-		
-		for(int i=0; i<rows; i++){
-			for(int j=0; j<cols; j++){
-				tableauBouton[i][j] = new JButton(i + ""+j);
-				tableauBouton[i][j].setBackground(Color.white);;
-				tableauBouton[i][j].addMouseListener(new Tire());
-				jp_tabjeu.add(tableauBouton[i][j]);							
-			}
-		}
-	}
-	
-	
-	
-	
 }
