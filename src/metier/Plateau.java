@@ -34,7 +34,7 @@ public class Plateau {
 		this.nbrBat5=nb5;
 	}
 	
-	public void décrementer(int tailleBat){
+	public void dÃ©crementer(int tailleBat){
 		if(tailleBat==3)
 		{
 			nbrBat3--;
@@ -75,7 +75,7 @@ public class Plateau {
 
 
 	public boolean emplcmtDisp(int x, int y){
-		if(plat[x][y].getEstoccupé()){
+		if(plat[x][y].getEstoccupÃ©()){
 			
 			return false;
 		} 
@@ -85,53 +85,66 @@ public class Plateau {
 		
 	}
 	
+	public boolean PlateauSuffisant(){
+		int taillePlateau = (this.largeur*this.longueur)/2;
+		int tailleTousBateaux = nbrBat3*3+nbrBat4*4+nbrBat5*5;
+		if(taillePlateau>=tailleTousBateaux){
+			return true;
+		}
+		else{
+			return false;
+		}
+		
+	}
+	
 	public void positionner(Bateau bat, int x, int y){
 
 		boolean peutPosit = false;
+		PlacementReussi=false;
 		System.out.println(bat.isEstVertical()+" "+ "vert");
 		//if pour le nombre de bateau
 		if(EncoreUnBateau(bat.getTaille())!=0)
 		{
 		if (bat.isEstVertical()) {				
 				peutPosit = true;
-				PlacementReussi=false;
-					// vérifie qu'il n'y a pas de bateau à l'endroit ou l'on veut le poser 
+
+					// vÃ©rifie qu'il n'y a pas de bateau Ã  l'endroit ou l'on veut le poser 
 					for (int i = 0; i < bat.getTaille(); i++) {
-						if (this.plat[x + i][y].getEstoccupé()) {
+						if (this.plat[x + i][y].getEstoccupÃ©()) {
 							peutPosit = false;
-							System.out.println("La case est occupé");
+							System.out.println("La case est occupÃ©");
 						}
 					}			
 			if(peutPosit==true){	
 				PlacementReussi=true;
-			// Positionne le bateau case à case
+			// Positionne le bateau case Ã  case
 			for (int i = 0; i < bat.getTaille(); i++) {
-				this.plat[x+i][y].setEstoccupé();
+				this.plat[x+i][y].setEstoccupÃ©();
 				this.plat[x+i][y].setOccupePar(bat);
 				System.out.println(x+" "+y);
 			}
-			décrementer(bat.getTaille());
+			dÃ©crementer(bat.getTaille());
 			}
 		
 			
 		}else {				
 				peutPosit = true;
-				PlacementReussi=false;
-					// vérifie qu'il n'y a pas de bateau à l'endroit ou l'on veut le poser 
+					// vÃ©rifie qu'il n'y a pas de bateau Ã  l'endroit ou l'on veut le poser 
 					for (int i = 0; i < bat.getTaille(); i++) {
-						if (this.plat[x][y + i].getEstoccupé()) {
+						if (this.plat[x][y + i].getEstoccupÃ©()) {
 							peutPosit = false;
-							System.out.println("il y a déjà un bateau ");
+							System.out.println("il y a dÃ©jÃ  un bateau ");
 						}
 					}	
 			if(peutPosit==true){
-			//Positionne le bateau case à case
+			PlacementReussi=true;
+			//Positionne le bateau case Ã  case
 			for (int i = 0; i < bat.getTaille(); i++) {
-				this.plat[x][y+i].setEstoccupé();		
+				this.plat[x][y+i].setEstoccupÃ©();		
 				this.plat[x][y+i].setOccupePar(bat);
 				System.out.println("test");
 			}
-			décrementer(bat.getTaille());
+			dÃ©crementer(bat.getTaille());
 			}
 		}
 	}
@@ -172,26 +185,26 @@ public class Plateau {
 
 	public void tirer( int x , int y){
 		
-		if(this.plat[x][y].getDejaTiré()) {
-			System.out.println("Vous avez déjà tiré sur cette case");
+		if(this.plat[x][y].getDejaTirÃ©()) {
+			System.out.println("Vous avez dÃ©jÃ  tirÃ© sur cette case");
 			//scanner x,y
 		} 	
 		else{
 		// Fait que le joueur ne puisse plus tirer sur cette case
-		this.plat[x][y].setDejaTiré();
+		this.plat[x][y].setDejaTirÃ©();
 		
-		//Test si un bateau est touché
-		if (this.plat[x][y].getEstoccupé()) {
-			System.out.println("Touché !");
-			//enlève un point de vie au bateau 
+		//Test si un bateau est touchÃ©
+		if (this.plat[x][y].getEstoccupÃ©()) {
+			System.out.println("TouchÃ© !");
+			//enlÃ¨ve un point de vie au bateau 
 			
 			this.plat[x][y].getOccupePar().setPtDeVie(this.plat[x][y].getOccupePar().getPtDeVie() - 1);
 			System.out.println(this.plat[x][y].getOccupePar().getPtDeVie());
 			
-			//vérifie si le bateau est coulé
+			//vÃ©rifie si le bateau est coulÃ©
 			if (this.plat[x][y].getOccupePar().getPtDeVie() == 0) {
-				System.out.println("Coulé !");
-				this.plat[x][y].getOccupePar().setestCoulé();
+				System.out.println("CoulÃ© !");
+				this.plat[x][y].getOccupePar().setestCoulÃ©();
 			}
 		}
 		else{
