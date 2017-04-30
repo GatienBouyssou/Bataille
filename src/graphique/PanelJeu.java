@@ -25,11 +25,11 @@ public class PanelJeu extends JPanel {
 	
 	// private JLabel jl_Score= new JLabel("Score :");
 	// private JLabel jl_NbrBateau = new JLabel("Nombre Bateau :");
-	// private JLabel jl_Case= new JLabel("Case Selectionné :");
+	// private JLabel jl_Case= new JLabel("Case SelectionnÃ© :");
 	// private JButton jb_Tirer= new JButton("Tirer!");
 	// private JLabel jl_etat= new JLabel("");
 
-	private JLabel jl_titre = new JLabel("Paramètre de Jeu");
+	private JLabel jl_titre = new JLabel("ParamÃ¨tre de Jeu");
 	private JPanel jp_param = new JPanel();
 	private JPanel jp_placementBateau= new JPanel();
 	private JLabel jl_taillePlateau = new JLabel("Quelle dimension de plateau ");
@@ -43,30 +43,10 @@ public class PanelJeu extends JPanel {
 	private JRadioButton jrb_4 = new JRadioButton("Bateau de 4");
 	private JRadioButton jrb_5 = new JRadioButton("Bateau de 5");
 	
-	public String getJtf_Platx() {
-		return jtf_Platx.getText();
-	}
-
-
-	public String getJtf_Platy() {
-		return jtf_Platy.getText();
-	}
-
-
-	//partie du jeu
-	//partie de gauche purement informative
-	private JPanel jp_jeu = new JPanel();
-	private JLabel jl_joueur1 = new JLabel("Joueur1");
-	private JLabel jl_joueur2 = new JLabel("Joueur2");
-	private JLabel jl_score = new JLabel("score : ");
-	private JLabel jl_score1 = new JLabel("score : ");
-	private JLabel jl_scorej1 = new JLabel("0");
-	private JLabel jl_scorej2 = new JLabel("0");
-	private JLabel jl_rien = new JLabel(" ");
-	private JLabel jl_rien2 = new JLabel(" ");
+	private JLabel jl_sensBateau = new JLabel("Choisir le sens : ");
+	private JRadioButton jrb_vertical = new JRadioButton("Vertical");
+	private JRadioButton jrb_horizontal = new JRadioButton("Horizontal");
 	
-	//Le plateau avec des cases
-	private JPanel jp_tabjeu = new JPanel();
 	
 	
 	
@@ -84,7 +64,8 @@ public class PanelJeu extends JPanel {
 
 	private int rows;
 	private int cols;
-	private int tailleBat;
+	private int tailleBat=3;
+	private boolean isVertical=true;
 	private JButton tableauBouton[][] = new JButton[50][50];
 	private JButton bouton = new JButton("Demarrer");
 	private Plateau plat;
@@ -102,24 +83,12 @@ public class PanelJeu extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					System.out.println(Integer.valueOf(jtf_Platx.getText()));
 					plat = new Plateau(Integer.valueOf(jtf_Platx.getText()), Integer.valueOf(jtf_Platy.getText()),Integer.valueOf(jtf_nbrBateau3.getText()), Integer.valueOf(jtf_nbrBateau4.getText()), Integer.valueOf(jtf_nbrBateau5.getText()) );
 					CreerTableau();
-					
-					tableauBouton[0][0].addActionListener(new ActionListener() {
-						
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							jeu();
-							
-						}
-					});
 				}
 			});
+			
 	}
-	
-	
-	
 	
 	class Placement implements MouseListener{
 		@Override
@@ -132,7 +101,7 @@ public class PanelJeu extends JPanel {
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
 						if(e.getSource() == tableauBouton[i][j]){
-								plat.positionner(new Bateau("Bat",tailleBat, true), i, j );	
+								plat.positionner(new Bateau("Bat",tailleBat, isVertical), i, j );	
 						}
 					}
 				}
@@ -158,8 +127,12 @@ public class PanelJeu extends JPanel {
 						for(int k=0; k<tailleBat; k++){
 							if(plat.isPlacementReussi())
 							{
-							tableauBouton[i+k][j].setBackground(Color.red);													
-							tableauBouton[i+k][j].setText("Occupe");	
+							if(isVertical){
+								tableauBouton[i+k][j].setBackground(Color.red);													
+								}
+							else{
+								tableauBouton[i][j+k].setBackground(Color.red);													
+							}
 							}
 						}
 					}
@@ -179,17 +152,36 @@ public class PanelJeu extends JPanel {
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
 						if(e.getSource() == tableauBouton[i][j]){
-							int taille = 3;
-							for(int k=0; k<taille; k++){
-								tableauBouton[i][j+k].setBackground(Color.BLACK);													
+							for(int k=0; k<tailleBat; k++){
+								if(isVertical)
+								{
+								if(plat.emplcmtDisp(i+k,j)){
+									tableauBouton[i+k][j].setBackground(Color.BLACK);
+									}
+								}
+								else{
+									if(plat.emplcmtDisp(i,j+k)){
+										tableauBouton[i][j+k].setBackground(Color.BLACK);
+										}
+								}
 							}
+						}
+					}
+				}
+			}catch(ArrayIndexOutOfBoundsException aioe){
+				for(int i=0; i<rows; i++){
+					for(int j=0; j<cols; j++){
+						if(plat.emplcmtDisp(i, j)){
+							tableauBouton[i][j].setBackground(Color.white);
 						}
 					}
 				}
 			}catch(NullPointerException np){
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
-						tableauBouton[i][j].setBackground(Color.white);		
+						if(plat.emplcmtDisp(i, j)){
+							tableauBouton[i][j].setBackground(Color.white);
+						}
 					}
 				}
 			}
@@ -198,7 +190,9 @@ public class PanelJeu extends JPanel {
 		public void mouseExited(MouseEvent e) {
 			for(int i=0; i<rows; i++){
 				for(int j=0; j<cols; j++){
-					tableauBouton[i][j].setBackground(Color.white);		
+					if(plat.emplcmtDisp(i, j)){
+						tableauBouton[i][j].setBackground(Color.white);
+						}
 				}
 			}
 		}		
@@ -209,7 +203,6 @@ public class PanelJeu extends JPanel {
 		
 		this.revalidate();
 		this.removeAll();
-		
 		this.add(jp_tableau, BorderLayout.CENTER);
 		
 		rows = Integer.parseInt(jtf_Platx.getText());
@@ -228,13 +221,21 @@ public class PanelJeu extends JPanel {
 		jp_placementBateau.setLayout(new BoxLayout(jp_placementBateau, BoxLayout.PAGE_AXIS));
 		this.jl_titre.setText("Quelle bateau : ");
 		this.jp_placementBateau.add(jl_titre);
-		ButtonGroup bg = new ButtonGroup();
-		bg.add(jrb_3);
-		bg.add(jrb_4);
-		bg.add(jrb_5);
+		ButtonGroup bg_tailleBateau = new ButtonGroup();
+		bg_tailleBateau.add(jrb_3);
+		bg_tailleBateau.add(jrb_4);
+		bg_tailleBateau.add(jrb_5);
 		this.jp_placementBateau.add(jrb_3);
 		this.jp_placementBateau.add(jrb_4);
 		this.jp_placementBateau.add(jrb_5);
+		jrb_3.setSelected(true);		
+		ButtonGroup bg_sensBateau = new ButtonGroup();
+		bg_sensBateau.add(jrb_vertical);
+		bg_sensBateau.add(jrb_horizontal);
+		jrb_vertical.setSelected(true);
+		this.jp_placementBateau.add(jl_sensBateau);
+		this.jp_placementBateau.add(jrb_vertical);
+		this.jp_placementBateau.add(jrb_horizontal);
 		
 		this.jrb_3.addActionListener(new ActionListener() {
 			
@@ -258,6 +259,23 @@ public class PanelJeu extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				tailleBat=5;
+			}
+		});
+		
+		this.jrb_vertical.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				isVertical=true;
+			}
+		});
+		this.jrb_horizontal.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				isVertical=false;
 			}
 		});
 		
@@ -297,7 +315,9 @@ public class PanelJeu extends JPanel {
 		
 		
 	}
-	
+		
+}
+
 	
 	
 	class Tire implements MouseListener{
@@ -350,7 +370,7 @@ public class PanelJeu extends JPanel {
 	public void jeu(){
 		this.removeAll();
 		this.revalidate();
-		//déclare le layout
+		//dÃ©clare le layout
 		this.setLayout(new BorderLayout());
 		//Les deux panel un qui contient le plateau et l'autre les info des joueurs
 		this.add(jp_tabjeu, BorderLayout.CENTER);
