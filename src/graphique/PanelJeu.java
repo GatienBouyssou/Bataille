@@ -8,10 +8,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -20,6 +23,7 @@ import javax.swing.SwingConstants;
 
 import metier.Bateau;
 import metier.Plateau;
+import metier.Jeu;
 
 public class PanelJeu extends JPanel {
 	
@@ -43,15 +47,10 @@ public class PanelJeu extends JPanel {
 	private JRadioButton jrb_4 = new JRadioButton("Bateau de 4");
 	private JRadioButton jrb_5 = new JRadioButton("Bateau de 5");
 	
-	public String getJtf_Platx() {
-		return jtf_Platx.getText();
-	}
 
-
-	public String getJtf_Platy() {
-		return jtf_Platy.getText();
-	}
-
+	private JLabel jl_sensBateau = new JLabel("Choisir le sens : ");
+	private JRadioButton jrb_vertical = new JRadioButton("Vertical");
+	private JRadioButton jrb_horizontal = new JRadioButton("Horizontal");
 
 	//partie du jeu
 	//partie de gauche purement informative
@@ -64,10 +63,11 @@ public class PanelJeu extends JPanel {
 	private JLabel jl_scorej2 = new JLabel("0");
 	private JLabel jl_rien = new JLabel(" ");
 	private JLabel jl_rien2 = new JLabel(" ");
-	
+	private JLabel jl_commentaire = new JLabel("Cliquer sur une case pour tirer");
 	//Le plateau avec des cases
-	private JPanel jp_tabjeu = new JPanel();
-	
+	private JPanel jp_tabjeu1 = new JPanel();
+	private JPanel jp_tabjeu2 = new JPanel();
+	private Jeu jeu = new Jeu();
 	
 	
 	
@@ -85,13 +85,22 @@ public class PanelJeu extends JPanel {
 	private int rows;
 	private int cols;
 	private int tailleBat;
+	private boolean isVertical=true;
 	private JButton tableauBouton[][] = new JButton[50][50];
+	private JPanel jp_boutonDemarrer = new JPanel();
 	private JButton bouton = new JButton("Demarrer");
-	private Plateau plat;
+	// attention modification valeur mise par défault ici
+	private Plateau plat = new Plateau(10, 10, 0, 0, 0);
 	
+	private Plateau platJoueur;
+	private Plateau platJoueur1;
+	private Plateau platJoueur2;
+	private int AQuiLeTour=1;
+	private JButton jb_validerPlateau = new JButton("Valider");
 
 	public PanelJeu(){
-			this.add(bouton);
+			this.setLayout(new BorderLayout());
+			this.add(bouton, BorderLayout.CENTER);
 			bouton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -100,28 +109,53 @@ public class PanelJeu extends JPanel {
 			});
 			jb_validerParametre.addActionListener(new ActionListener() {
 				
+//				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					System.out.println(Integer.valueOf(jtf_Platx.getText()));
-					plat = new Plateau(Integer.valueOf(jtf_Platx.getText()), Integer.valueOf(jtf_Platy.getText()),Integer.valueOf(jtf_nbrBateau3.getText()), Integer.valueOf(jtf_nbrBateau4.getText()), Integer.valueOf(jtf_nbrBateau5.getText()) );
+					try{
+					platJoueur = new Plateau(Integer.valueOf(jtf_Platx.getText()), Integer.valueOf(jtf_Platy.getText()),Integer.valueOf(jtf_nbrBateau3.getText()), Integer.valueOf(jtf_nbrBateau4.getText()), Integer.valueOf(jtf_nbrBateau5.getText()) );
+					if(platJoueur.PlateauSuffisant()){
 					CreerTableau();
-					
-					tableauBouton[0][0].addActionListener(new ActionListener() {
-						
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							jeu();
-							
-						}
-					});
+					}
+					else{
+						System.out.println("Espace pas suffisant");
+					}
+					}catch( NumberFormatException nfe){
+						System.out.println("Saisir des chiffres");
+					}
 				}
 			});
+			jb_validerPlateau.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(AQuiLeTour==1){
+						System.out.println("oui");
+						platJoueur1=platJoueur;
+						platJoueur = new Plateau(Integer.valueOf(jtf_Platx.getText()), Integer.valueOf(jtf_Platy.getText()),Integer.valueOf(jtf_nbrBateau3.getText()), Integer.valueOf(jtf_nbrBateau4.getText()), Integer.valueOf(jtf_nbrBateau5.getText()) );
+						CreerTableau();
+						
+						AQuiLeTour=2;
+					}
+					else{
+						System.out.println("oui2");
+						
+						platJoueur2=platJoueur;
+						jb_validerPlateau.addActionListener(new ActionListener() {
+							
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								jeu();
+								
+							}
+						});
+					}
+				}
+			});
+			
 	}
 	
-	
-	
-	
-	class Placement implements MouseListener{
+	class Placement implements MouseListener{		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			
@@ -132,7 +166,7 @@ public class PanelJeu extends JPanel {
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
 						if(e.getSource() == tableauBouton[i][j]){
-								plat.positionner(new Bateau("Bat",tailleBat, true), i, j );	
+								platJoueur.positionner(new Bateau("Bat",tailleBat, isVertical), i, j );	
 						}
 					}
 				}
@@ -156,10 +190,14 @@ public class PanelJeu extends JPanel {
 				for(int j=0; j<cols; j++){
 					if(e.getSource() == tableauBouton[i][j]){
 						for(int k=0; k<tailleBat; k++){
-							if(plat.isPlacementReussi())
+							if(platJoueur.isPlacementReussi())
 							{
-							tableauBouton[i+k][j].setBackground(Color.red);													
-							tableauBouton[i+k][j].setText("Occupe");	
+							if(isVertical){
+								tableauBouton[i+k][j].setBackground(Color.red);													
+								}
+							else{
+								tableauBouton[i][j+k].setBackground(Color.red);													
+							}
 							}
 						}
 					}
@@ -179,17 +217,36 @@ public class PanelJeu extends JPanel {
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
 						if(e.getSource() == tableauBouton[i][j]){
-							int taille = 3;
-							for(int k=0; k<taille; k++){
-								tableauBouton[i][j+k].setBackground(Color.BLACK);													
+							for(int k=0; k<tailleBat; k++){
+								if(isVertical)
+								{
+								if(platJoueur.emplcmtDisp(i+k,j)){
+									tableauBouton[i+k][j].setBackground(Color.BLACK);
+									}
+								}
+								else{
+									if(platJoueur.emplcmtDisp(i,j+k)){
+										tableauBouton[i][j+k].setBackground(Color.BLACK);
+									}
+								}
 							}
+						}
+					}
+				}
+			}catch(ArrayIndexOutOfBoundsException aioe){
+				for(int i=0; i<rows; i++){
+					for(int j=0; j<cols; j++){
+						if(platJoueur.emplcmtDisp(i, j)){
+							tableauBouton[i][j].setBackground(Color.white);
 						}
 					}
 				}
 			}catch(NullPointerException np){
 				for(int i=0; i<rows; i++){
 					for(int j=0; j<cols; j++){
-						tableauBouton[i][j].setBackground(Color.white);		
+						if(platJoueur.emplcmtDisp(i, j)){
+							tableauBouton[i][j].setBackground(Color.white);
+						}
 					}
 				}
 			}
@@ -198,7 +255,9 @@ public class PanelJeu extends JPanel {
 		public void mouseExited(MouseEvent e) {
 			for(int i=0; i<rows; i++){
 				for(int j=0; j<cols; j++){
-					tableauBouton[i][j].setBackground(Color.white);		
+					if(platJoueur.emplcmtDisp(i, j)){
+						tableauBouton[i][j].setBackground(Color.white);
+						}
 				}
 			}
 		}		
@@ -209,7 +268,8 @@ public class PanelJeu extends JPanel {
 		
 		this.revalidate();
 		this.removeAll();
-		
+		tailleBat=3;
+		jp_tableau= new JPanel();
 		this.add(jp_tableau, BorderLayout.CENTER);
 		
 		rows = Integer.parseInt(jtf_Platx.getText());
@@ -228,13 +288,23 @@ public class PanelJeu extends JPanel {
 		jp_placementBateau.setLayout(new BoxLayout(jp_placementBateau, BoxLayout.PAGE_AXIS));
 		this.jl_titre.setText("Quelle bateau : ");
 		this.jp_placementBateau.add(jl_titre);
-		ButtonGroup bg = new ButtonGroup();
-		bg.add(jrb_3);
-		bg.add(jrb_4);
-		bg.add(jrb_5);
+		ButtonGroup bg_tailleBateau = new ButtonGroup();
+		bg_tailleBateau.add(jrb_3);
+		bg_tailleBateau.add(jrb_4);
+		bg_tailleBateau.add(jrb_5);
 		this.jp_placementBateau.add(jrb_3);
 		this.jp_placementBateau.add(jrb_4);
 		this.jp_placementBateau.add(jrb_5);
+		jrb_3.setSelected(true);		
+		ButtonGroup bg_sensBateau = new ButtonGroup();
+		bg_sensBateau.add(jrb_vertical);
+		bg_sensBateau.add(jrb_horizontal);
+		jrb_vertical.setSelected(true);
+		this.jp_placementBateau.add(jl_sensBateau);
+		this.jp_placementBateau.add(jrb_vertical);
+		this.jp_placementBateau.add(jrb_horizontal);
+		this.jp_placementBateau.add(jb_validerPlateau);
+		
 		
 		this.jrb_3.addActionListener(new ActionListener() {
 			
@@ -261,6 +331,23 @@ public class PanelJeu extends JPanel {
 			}
 		});
 		
+		this.jrb_vertical.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				isVertical=true;
+			}
+		});
+		this.jrb_horizontal.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				isVertical=false;
+			}
+		});
+		
 	}
 	
 	
@@ -271,7 +358,6 @@ public class PanelJeu extends JPanel {
 		
 		this.removeAll();
 		this.revalidate();
-		this.setLayout(new BorderLayout());
 		this.add(jl_titre, BorderLayout.NORTH);
 		jl_titre.setHorizontalAlignment(SwingConstants.CENTER);
 		jp_param.setLayout(new GridLayout(6, 2));
@@ -298,40 +384,89 @@ public class PanelJeu extends JPanel {
 		
 	}
 	
-	
+	/**
+	 * La classe permettant de tirer sur l'autre plateau
+	**/
 	
 	class Tire implements MouseListener{
+		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			for(int i=0; i<rows; i++){
 				for(int j=0; j<cols; j++){
 					if (e.getSource() == tableauBouton[i][j]) {
+						int res = 0;
+						if (jeu.getTour()==1) {
+							res = platJoueur1.tirer(i, j);
+						}
+						else
+						{
+							res = platJoueur2.tirer(i, j);
+						}
 						
+						
+						if (res == 0) {
+							jl_commentaire.setText("Vous avez déjà tiré sur cette case !");
+						}else if (res == 1) {
+							tableauBouton[i][j].setBackground(Color.BLUE);
+						}else if (res == 2) {
+							tableauBouton[i][j].setBackground(Color.RED);
+							jl_commentaire.setText("Cliquez sur une case pour tirer");
+						}else{
+							jl_commentaire.setText("Touché coulé");
+						}
+						if (jeu.getTour() == 1) {
+							jeu.setTour(2);
+						}
+						else{
+							jeu.setTour(1);
+						}
 					}		
 				}
 			}
 		}
 		@Override
 		public void mousePressed(MouseEvent e) {
-			
+		
 		}
 		@Override
 		public void mouseReleased(MouseEvent e) {
+	
 		}
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			try{
-				for(int i=0; i<rows; i++){
-					for(int j=0; j<cols; j++){
-						if(e.getSource() == tableauBouton[i][j]){
-							tableauBouton[i][j].setBackground(Color.BLACK);		
+			
+			for(int i=0; i<rows; i++){
+				for(int j=0; j<cols; j++){
+					if(e.getSource() == tableauBouton[i][j]){
+						if (jeu.getTour() == 1) {
+							if (platJoueur1.aDejaEteTire(i, j)) {
+								if (platJoueur1.aEteTouché(i, j)) {
+									tableauBouton[i][j].setBackground(Color.BLUE);
+								}
+								else{
+									tableauBouton[i][j].setBackground(Color.RED);
+								}
+							}
+							else{
+								tableauBouton[i][j].setBackground(Color.BLACK);		
+							}
 						}
-					}
-				}
-			}catch(NullPointerException np){
-				for(int i=0; i<rows; i++){
-					for(int j=0; j<cols; j++){
-						tableauBouton[i][j].setBackground(Color.white);		
+						else
+						{
+							if (platJoueur2.aDejaEteTire(i, j)) {
+								if (platJoueur2.aEteTouché(i, j)) {
+									tableauBouton[i][j].setBackground(Color.BLUE);
+								}
+								else{
+									tableauBouton[i][j].setBackground(Color.RED);
+								}
+							}
+							else{
+								tableauBouton[i][j].setBackground(Color.BLACK);		
+							}
+						}
+						
 					}
 				}
 			}
@@ -340,7 +475,33 @@ public class PanelJeu extends JPanel {
 		public void mouseExited(MouseEvent e) {
 			for(int i=0; i<rows; i++){
 				for(int j=0; j<cols; j++){
-					tableauBouton[i][j].setBackground(Color.white);		
+					if (jeu.getTour() == 1) {
+						if (platJoueur1.aDejaEteTire(i, j)) {
+							if (platJoueur1.aEteTouché(i, j)) {
+								tableauBouton[i][j].setBackground(Color.BLUE);
+							}
+							else{
+								tableauBouton[i][j].setBackground(Color.RED);
+							}
+						}else{
+							tableauBouton[i][j].setBackground(Color.white);
+						}
+					}
+					else
+					{
+						if (platJoueur2.aDejaEteTire(i, j)) {
+							if (platJoueur2.aEteTouché(i, j)) {
+								tableauBouton[i][j].setBackground(Color.BLUE);
+							}
+							else{
+								tableauBouton[i][j].setBackground(Color.RED);
+							}
+						}
+						else{
+							tableauBouton[i][j].setBackground(Color.white);		
+						}
+					}
+							
 				}
 			}
 		}		
@@ -348,12 +509,13 @@ public class PanelJeu extends JPanel {
 	
 	
 	public void jeu(){
+		
 		this.removeAll();
 		this.revalidate();
 		//déclare le layout
 		this.setLayout(new BorderLayout());
 		//Les deux panel un qui contient le plateau et l'autre les info des joueurs
-		this.add(jp_tabjeu, BorderLayout.CENTER);
+
 		this.add(jp_jeu, BorderLayout.WEST);
 		
 		jp_jeu.setLayout(new GridLayout(5,2));
@@ -366,23 +528,45 @@ public class PanelJeu extends JPanel {
 		jp_jeu.add(jl_rien2);	
 		jp_jeu.add(jl_score1);
 		jp_jeu.add(jl_scorej2);
+		jp_jeu.add(jl_commentaire);
 		
 		
 		rows = 10;
 		cols = 10;
-		jp_tabjeu.setLayout(new GridLayout(rows, cols));
+		jp_tabjeu1.setLayout(new GridLayout(rows, cols));
 		
-		for(int i=0; i<rows; i++){
-			for(int j=0; j<cols; j++){
-				tableauBouton[i][j] = new JButton(i + ""+j);
-				tableauBouton[i][j].setBackground(Color.white);;
-				tableauBouton[i][j].addMouseListener(new Tire());
-				jp_tabjeu.add(tableauBouton[i][j]);							
+		
+		
+		
+		
+		
+		//while (jeu.getGagnant() == false) {
+			if (jeu.getTour() == 1) {
+				this.add(jp_tabjeu1, BorderLayout.CENTER);
+				for(int i=0; i<rows; i++){
+					for(int j=0; j<cols; j++){
+						tableauBouton[i][j] = new JButton(i + ""+j);
+						tableauBouton[i][j].setBackground(Color.white);;
+						tableauBouton[i][j].addMouseListener(new Tire());
+						jp_tabjeu1.add(tableauBouton[i][j]);			
+					}
+				}
 			}
-		}
-	}
-	
-	
-	
-	
+			else
+			{
+				System.out.println("oui");
+				this.add(jp_tabjeu2, BorderLayout.CENTER);
+				for(int i=0; i<rows; i++){
+					for(int j=0; j<cols; j++){
+						tableauBouton[i][j] = new JButton(i + ""+j);
+						tableauBouton[i][j].setBackground(Color.white);;
+						tableauBouton[i][j].addMouseListener(new Tire());
+						jp_tabjeu2.add(tableauBouton[i][j]);			
+					}
+				}
+			}
+		//}
+		
+		
+	}	
 }

@@ -34,6 +34,13 @@ public class Plateau {
 		this.nbrBat5=nb5;
 	}
 	
+	public boolean aEteTouché(int x, int y){
+		if (this.plat[x][y].getDejaTiré() && this.plat[x][y].getEstoccupé()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	public void décrementer(int tailleBat){
 		if(tailleBat==3)
 		{
@@ -85,26 +92,50 @@ public class Plateau {
 		
 	}
 	
+	public boolean aDejaEteTire(int x, int y){
+		if(plat[x][y].getDejaTiré()){
+			
+			return true;
+		} 
+		else{
+			return false;
+		}
+		
+	}
+	
+	public boolean PlateauSuffisant(){
+		int taillePlateau = (this.largeur*this.longueur)/2;
+		int tailleTousBateaux = nbrBat3*3+nbrBat4*4+nbrBat5*5;
+		if(taillePlateau>=tailleTousBateaux){
+			return true;
+		}
+		else{
+			return false;
+		}
+		
+	}
+	
 	public void positionner(Bateau bat, int x, int y){
 
 		boolean peutPosit = false;
+		PlacementReussi=false;
 		System.out.println(bat.isEstVertical()+" "+ "vert");
 		//if pour le nombre de bateau
 		if(EncoreUnBateau(bat.getTaille())!=0)
 		{
 		if (bat.isEstVertical()) {				
 				peutPosit = true;
-				PlacementReussi=false;
-					// vérifie qu'il n'y a pas de bateau à l'endroit ou l'on veut le poser 
+
+					// vÃ©rifie qu'il n'y a pas de bateau Ã  l'endroit ou l'on veut le poser 
 					for (int i = 0; i < bat.getTaille(); i++) {
 						if (this.plat[x + i][y].getEstoccupé()) {
 							peutPosit = false;
-							System.out.println("La case est occupé");
+							System.out.println("La case est occupÃ©");
 						}
 					}			
 			if(peutPosit==true){	
 				PlacementReussi=true;
-			// Positionne le bateau case à case
+			// Positionne le bateau case Ã  case
 			for (int i = 0; i < bat.getTaille(); i++) {
 				this.plat[x+i][y].setEstoccupé();
 				this.plat[x+i][y].setOccupePar(bat);
@@ -116,16 +147,16 @@ public class Plateau {
 			
 		}else {				
 				peutPosit = true;
-				PlacementReussi=false;
-					// vérifie qu'il n'y a pas de bateau à l'endroit ou l'on veut le poser 
+					// vÃ©rifie qu'il n'y a pas de bateau Ã  l'endroit ou l'on veut le poser 
 					for (int i = 0; i < bat.getTaille(); i++) {
 						if (this.plat[x][y + i].getEstoccupé()) {
 							peutPosit = false;
-							System.out.println("il y a déjà un bateau ");
+							System.out.println("il y a dÃ©jÃ  un bateau ");
 						}
 					}	
 			if(peutPosit==true){
-			//Positionne le bateau case à case
+			PlacementReussi=true;
+			//Positionne le bateau case Ã  case
 			for (int i = 0; i < bat.getTaille(); i++) {
 				this.plat[x][y+i].setEstoccupé();		
 				this.plat[x][y+i].setOccupePar(bat);
@@ -168,13 +199,20 @@ public class Plateau {
 	public void setNbrBat5(int nbrBat5) {
 		this.nbrBat5 = nbrBat5;
 	}
+	
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * 
+	 * tirer vérifie que l'on peut tirer sur cette case et si touche bateau vérifie s'il est coulé 
+	 */
 
-
-	public void tirer( int x , int y){
+	public int tirer( int x , int y){
 		
 		if(this.plat[x][y].getDejaTiré()) {
-			System.out.println("Vous avez déjà tiré sur cette case");
-			//scanner x,y
+			System.out.println("Vous avez dÃ©jÃ  tirÃ© sur cette case");
+			return 0;
 		} 	
 		else{
 		// Fait que le joueur ne puisse plus tirer sur cette case
@@ -182,23 +220,27 @@ public class Plateau {
 		
 		//Test si un bateau est touché
 		if (this.plat[x][y].getEstoccupé()) {
+			
 			System.out.println("Touché !");
 			//enlève un point de vie au bateau 
-			
 			this.plat[x][y].getOccupePar().setPtDeVie(this.plat[x][y].getOccupePar().getPtDeVie() - 1);
 			System.out.println(this.plat[x][y].getOccupePar().getPtDeVie());
 			
-			//vérifie si le bateau est coulé
+			
+			//vÃ©rifie si le bateau est coulÃ©
 			if (this.plat[x][y].getOccupePar().getPtDeVie() == 0) {
 				System.out.println("Coulé !");
 				this.plat[x][y].getOccupePar().setestCoulé();
+				return 3;
 			}
+			return 1;
 		}
 		else{
 			System.out.println("A l'eau");
-			
+			return 2;
 		}
 		}
+		
 				
 	}
 
