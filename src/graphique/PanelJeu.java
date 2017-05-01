@@ -29,11 +29,11 @@ public class PanelJeu extends JPanel {
 	
 	// private JLabel jl_Score= new JLabel("Score :");
 	// private JLabel jl_NbrBateau = new JLabel("Nombre Bateau :");
-	// private JLabel jl_Case= new JLabel("Case Selectionné :");
+	// private JLabel jl_Case= new JLabel("Case SelectionnÃ© :");
 	// private JButton jb_Tirer= new JButton("Tirer!");
 	// private JLabel jl_etat= new JLabel("");
 
-	private JLabel jl_titre = new JLabel("Paramètre de Jeu");
+	private JLabel jl_titre = new JLabel("ParamÃ¨tre de Jeu");
 	private JPanel jp_param = new JPanel();
 	private JPanel jp_placementBateau= new JPanel();
 	private JLabel jl_taillePlateau = new JLabel("Quelle dimension de plateau ");
@@ -139,7 +139,7 @@ public class PanelJeu extends JPanel {
 					}
 					else{
 						System.out.println("oui2");
-						
+						platJoueur=platJoueur2;
 						platJoueur2=platJoueur;
 						jb_validerPlateau.addActionListener(new ActionListener() {
 							
@@ -205,7 +205,7 @@ public class PanelJeu extends JPanel {
 			}
 			for(int i=0; i<rows; i++){
 				for(int j=0; j<cols; j++){
-					if(!plat.emplcmtDisp(i, j)){
+					if(!platJoueur.emplcmtDisp(i, j)){
 					tableauBouton[i][j].setBackground(Color.red);
 					}
 				}

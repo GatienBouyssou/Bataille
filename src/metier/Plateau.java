@@ -34,6 +34,7 @@ public class Plateau {
 		this.nbrBat5=nb5;
 	}
 	
+
 	public boolean aEteTouché(int x, int y){
 		if (this.plat[x][y].getDejaTiré() && this.plat[x][y].getEstoccupé()) {
 			return true;
@@ -92,6 +93,7 @@ public class Plateau {
 		
 	}
 	
+
 	public boolean aDejaEteTire(int x, int y){
 		if(plat[x][y].getDejaTiré()){
 			
@@ -103,6 +105,7 @@ public class Plateau {
 		
 	}
 	
+
 	public boolean PlateauSuffisant(){
 		int taillePlateau = (this.largeur*this.longueur)/2;
 		int tailleTousBateaux = nbrBat3*3+nbrBat4*4+nbrBat5*5;
@@ -123,49 +126,49 @@ public class Plateau {
 		//if pour le nombre de bateau
 		if(EncoreUnBateau(bat.getTaille())!=0)
 		{
-		if (bat.isEstVertical()) {				
-				peutPosit = true;
-
-					// vÃ©rifie qu'il n'y a pas de bateau Ã  l'endroit ou l'on veut le poser 
-					for (int i = 0; i < bat.getTaille(); i++) {
-						if (this.plat[x + i][y].getEstoccupé()) {
-							peutPosit = false;
-							System.out.println("La case est occupÃ©");
-						}
-					}			
-			if(peutPosit==true){	
-				PlacementReussi=true;
-			// Positionne le bateau case Ã  case
-			for (int i = 0; i < bat.getTaille(); i++) {
-				this.plat[x+i][y].setEstoccupé();
-				this.plat[x+i][y].setOccupePar(bat);
-				System.out.println(x+" "+y);
+			if (bat.isEstVertical()) {				
+					peutPosit = true;
+	
+						// vÃ©rifie qu'il n'y a pas de bateau Ã  l'endroit ou l'on veut le poser 
+						for (int i = 0; i < bat.getTaille(); i++) {
+							if (this.plat[x + i][y].getEstoccupé()) {
+								peutPosit = false;
+								System.out.println("La case est occupÃ©");
+							}
+						}			
+				if(peutPosit==true){	
+					PlacementReussi=true;
+				// Positionne le bateau case Ã  case
+				for (int i = 0; i < bat.getTaille(); i++) {
+					this.plat[x+i][y].setEstoccupé();
+					this.plat[x+i][y].setOccupePar(bat);
+					System.out.println(x+" "+y);
+				}
+				décrementer(bat.getTaille());
 			}
-			décrementer(bat.getTaille());
-			}
-		
 			
-		}else {				
-				peutPosit = true;
-					// vÃ©rifie qu'il n'y a pas de bateau Ã  l'endroit ou l'on veut le poser 
+				
+			}else {				
+					peutPosit = true;
+						// vÃ©rifie qu'il n'y a pas de bateau Ã  l'endroit ou l'on veut le poser 
+						for (int i = 0; i < bat.getTaille(); i++) {
+							if (this.plat[x][y + i].getEstoccupé()) {
+								peutPosit = false;
+								System.out.println("il y a dÃ©jÃ  un bateau ");
+							}
+						}	
+				if(peutPosit==true){
+				PlacementReussi=true;
+				//Positionne le bateau case Ã  case
 					for (int i = 0; i < bat.getTaille(); i++) {
-						if (this.plat[x][y + i].getEstoccupé()) {
-							peutPosit = false;
-							System.out.println("il y a dÃ©jÃ  un bateau ");
-						}
-					}	
-			if(peutPosit==true){
-			PlacementReussi=true;
-			//Positionne le bateau case Ã  case
-			for (int i = 0; i < bat.getTaille(); i++) {
-				this.plat[x][y+i].setEstoccupé();		
-				this.plat[x][y+i].setOccupePar(bat);
-				System.out.println("test");
-			}
-			décrementer(bat.getTaille());
+						this.plat[x][y+i].setEstoccupé();		
+						this.plat[x][y+i].setOccupePar(bat);
+						System.out.println("test");
+					}
+				décrementer(bat.getTaille());
+				}
 			}
 		}
-	}
 		else{
 			System.out.println("VOus n'avez plus de Bateau de taille "+ bat.getTaille());
 		}
@@ -210,6 +213,7 @@ public class Plateau {
 
 	public int tirer( int x , int y){
 		
+
 		if(this.plat[x][y].getDejaTiré()) {
 			System.out.println("Vous avez dÃ©jÃ  tirÃ© sur cette case");
 			return 0;
@@ -223,13 +227,17 @@ public class Plateau {
 			
 			System.out.println("Touché !");
 			//enlève un point de vie au bateau 
+
 			this.plat[x][y].getOccupePar().setPtDeVie(this.plat[x][y].getOccupePar().getPtDeVie() - 1);
 			System.out.println(this.plat[x][y].getOccupePar().getPtDeVie());
 			
-			
-			//vÃ©rifie si le bateau est coulÃ©
+
+			//vérifie si le bateau est coulé
 			if (this.plat[x][y].getOccupePar().getPtDeVie() == 0) {
+
 				System.out.println("Coulé !");
+				this.plat[x][y].getOccupePar().setestCoulé();
+				System.out.println("CoulÃ© !");
 				this.plat[x][y].getOccupePar().setestCoulé();
 				return 3;
 			}
@@ -240,7 +248,6 @@ public class Plateau {
 			return 2;
 		}
 		}
-		
 				
 	}
 
