@@ -29,11 +29,11 @@ public class PanelJeu extends JPanel {
 	
 	// private JLabel jl_Score= new JLabel("Score :");
 	// private JLabel jl_NbrBateau = new JLabel("Nombre Bateau :");
-	// private JLabel jl_Case= new JLabel("Case Selectionné :");
+	// private JLabel jl_Case= new JLabel("Case SelectionnÃ© :");
 	// private JButton jb_Tirer= new JButton("Tirer!");
 	// private JLabel jl_etat= new JLabel("");
 
-	private JLabel jl_titre = new JLabel("Paramètre de Jeu");
+	private JLabel jl_titre = new JLabel("ParamÃ¨tre de Jeu");
 	private JPanel jp_param = new JPanel();
 	private JPanel jp_placementBateau= new JPanel();
 	private JLabel jl_taillePlateau = new JLabel("Quelle dimension de plateau ");
@@ -89,7 +89,7 @@ public class PanelJeu extends JPanel {
 	private JButton tableauBouton[][] = new JButton[50][50];
 	private JPanel jp_boutonDemarrer = new JPanel();
 	private JButton bouton = new JButton("Demarrer");
-	// attention modification valeur mise par d�fault ici
+	// attention modification valeur mise par défault ici
 	private Plateau plat = new Plateau(10, 10, 0, 0, 0);
 	
 	private Plateau platJoueur;
@@ -358,32 +358,85 @@ public class PanelJeu extends JPanel {
 		
 		this.removeAll();
 		this.revalidate();
-		this.add(jl_titre, BorderLayout.NORTH);
-		jl_titre.setHorizontalAlignment(SwingConstants.CENTER);
-		jp_param.setLayout(new GridLayout(6, 2));
-		this.add(jp_param, BorderLayout.CENTER);
-		jp_param.add(jl_taillePlateau);
-		jp_param.add(jp_taillePlateau);
-		jp_taillePlateau.add(jtf_Platx);
-		jp_taillePlateau.add(jl_par);
-		jp_taillePlateau.add(jtf_Platy);
-		jtf_Platx.setPreferredSize(new Dimension(50, 50));
-		jtf_Platy.setPreferredSize(new Dimension(50, 50));
-		jp_param.add(jl_nbrBateau3);
-		jp_param.add(jtf_nbrBateau3);
-		jp_param.add(jl_nbrBateau4);
-		jp_param.add(jtf_nbrBateau4);
-		jp_param.add(jl_nbrBateau5);
-		jp_param.add(jtf_nbrBateau5);
-		JPanel jp_pourboutonvalider = new JPanel();
-		this.add(jp_pourboutonvalider, BorderLayout.SOUTH);
-		jp_pourboutonvalider.add(jb_validerParametre);
-		jb_validerParametre.setHorizontalAlignment(SwingConstants.CENTER);
-
+		this.add(jp_param);
+		jp_param.setLayout(new GridBagLayout());
+		/* Le gridBagConstraints va définir la position et la taille des éléments */
+		GridBagConstraints gc = new GridBagConstraints();
+		Font font2 = new Font("Arial",Font.BOLD,15);
+		gc.fill = GridBagConstraints.HORIZONTAL;
+		/* insets définir la marge entre les composant new Insets(margeSupérieure, margeGauche, margeInférieur, margeDroite) */
+		gc.insets = new Insets(5, 5, 5, 5);
+		/* ipady permet de savoir où on place le composant s'il n'occupe pas la totalité de l'espace disponnible */
+		gc.ipady = gc.anchor = GridBagConstraints.CENTER;
+		/* weightx définit le nombre de cases en abscisse */
 		
+		/* weightx définit le nombre de cases en ordonnée */
+		gc.weightx = 6;
+		gc.weighty = 9;
+		for(int i=0; i<gc.weightx;i++){
+			gc.gridx=i;
+			gc.gridwidth=1;
+			JLabel jl_vide = new JLabel("");
+			jp_param.add(jl_vide, gc);
+		}
+		gc.gridwidth=6;
+		gc.gridx = 0;
+		gc.gridy = 0;
+		jp_param.add(jl_titre, gc);
+		jl_titre.setHorizontalAlignment(SwingConstants.CENTER);
+		jl_titre.setForeground(Color.red);
+		Font font = new Font("Arial",Font.BOLD,20);
+		jl_titre.setFont(font);
+		gc.gridwidth=1;
+		gc.gridx = 1;
+		gc.gridy++;
+		jp_param.add(jl_taillePlateau, gc);
+		jl_taillePlateau.setFont(font2);
+		
+		gc.gridx=gc.gridx + gc.gridwidth;
+		jp_param.add(jtf_Platx,gc);
+		
+		gc.gridx=gc.gridx + gc.gridwidth;
+		jp_param.add(jl_par, gc);
+		jl_par.setHorizontalAlignment(SwingConstants.CENTER);
+		gc.gridx=gc.gridx + gc.gridwidth;
+		jp_param.add(jtf_Platy, gc);
+		
+		gc.gridx = 1;
+		gc.gridy++;
+		jp_param.add(jl_nbrBateau3, gc);
+		jl_nbrBateau3.setFont(font2);
+	
+		gc.gridx=gc.gridx + gc.gridwidth;
+		gc.gridwidth = 3;
+		jp_param.add(jtf_nbrBateau3, gc);
+		
+		gc.gridwidth = 1;
+		gc.gridx = 1;
+		gc.gridy++;
+		jp_param.add(jl_nbrBateau4, gc);
+		jl_nbrBateau4.setFont(font2);
+		
+		gc.gridx=gc.gridx + gc.gridwidth;
+		gc.gridwidth = 3;
+		jp_param.add(jtf_nbrBateau4, gc);
+		
+		gc.gridwidth = 1;
+		gc.gridx = 1;
+		gc.gridy++;
+		jp_param.add(jl_nbrBateau5, gc);
+		jl_nbrBateau5.setFont(font2);
+		
+		gc.gridx=gc.gridx + gc.gridwidth;
+		gc.gridwidth = 3;
+		jp_param.add(jtf_nbrBateau5, gc);
+		gc.gridwidth = 6;
+		gc.gridx = 0;
+		gc.gridy = 9;
+		jp_param.add(jp_boutonParam, gc);
+		jp_boutonParam.add(jb_validerParametre);
 		
 	}
-	
 	/**
 	 * La classe permettant de tirer sur l'autre plateau
 	**/
@@ -406,14 +459,14 @@ public class PanelJeu extends JPanel {
 						
 						
 						if (res == 0) {
-							jl_commentaire.setText("Vous avez d�j� tir� sur cette case !");
+							jl_commentaire.setText("Vous avez déjà tiré sur cette case !");
 						}else if (res == 1) {
 							tableauBouton[i][j].setBackground(Color.BLUE);
 						}else if (res == 2) {
 							tableauBouton[i][j].setBackground(Color.RED);
 							jl_commentaire.setText("Cliquez sur une case pour tirer");
 						}else{
-							jl_commentaire.setText("Touch� coul�");
+							jl_commentaire.setText("Touché coulé");
 						}
 						if (jeu.getTour() == 1) {
 							jeu.setTour(2);
@@ -441,7 +494,7 @@ public class PanelJeu extends JPanel {
 					if(e.getSource() == tableauBouton[i][j]){
 						if (jeu.getTour() == 1) {
 							if (platJoueur1.aDejaEteTire(i, j)) {
-								if (platJoueur1.aEteTouch�(i, j)) {
+								if (platJoueur1.aEteTouché(i, j)) {
 									tableauBouton[i][j].setBackground(Color.BLUE);
 								}
 								else{
@@ -455,7 +508,7 @@ public class PanelJeu extends JPanel {
 						else
 						{
 							if (platJoueur2.aDejaEteTire(i, j)) {
-								if (platJoueur2.aEteTouch�(i, j)) {
+								if (platJoueur2.aEteTouché(i, j)) {
 									tableauBouton[i][j].setBackground(Color.BLUE);
 								}
 								else{
@@ -477,7 +530,7 @@ public class PanelJeu extends JPanel {
 				for(int j=0; j<cols; j++){
 					if (jeu.getTour() == 1) {
 						if (platJoueur1.aDejaEteTire(i, j)) {
-							if (platJoueur1.aEteTouch�(i, j)) {
+							if (platJoueur1.aEteTouché(i, j)) {
 								tableauBouton[i][j].setBackground(Color.BLUE);
 							}
 							else{
@@ -490,7 +543,7 @@ public class PanelJeu extends JPanel {
 					else
 					{
 						if (platJoueur2.aDejaEteTire(i, j)) {
-							if (platJoueur2.aEteTouch�(i, j)) {
+							if (platJoueur2.aEteTouché(i, j)) {
 								tableauBouton[i][j].setBackground(Color.BLUE);
 							}
 							else{
@@ -512,7 +565,7 @@ public class PanelJeu extends JPanel {
 		
 		this.removeAll();
 		this.revalidate();
-		//d�clare le layout
+		//déclare le layout
 		this.setLayout(new BorderLayout());
 		//Les deux panel un qui contient le plateau et l'autre les info des joueurs
 
